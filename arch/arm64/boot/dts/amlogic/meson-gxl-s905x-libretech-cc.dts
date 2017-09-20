@@ -147,6 +147,14 @@
 	};
 };
 
+&audio {
+	status = "okay";
+};
+
+&aiu_i2s_dma {
+	status = "okay";
+};
+
 &cec_AO {
 	status = "okay";
 	pinctrl-0 = <&ao_cec_pins>;
@@ -186,6 +194,11 @@
 	pinctrl-0 = <&remote_input_ao_pins>;
 	pinctrl-names = "default";
 };
+
+&i2s_dai {
+	status = "okay";
+};
+
 
 &hdmi_tx {
 	status = "okay";
