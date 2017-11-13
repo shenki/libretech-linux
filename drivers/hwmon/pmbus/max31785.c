@@ -615,8 +615,10 @@ static int max31785_probe(struct i2c_client *client,
 	if (!i2c_check_functionality(client->adapter,
 				     I2C_FUNC_SMBUS_BYTE_DATA |
 				     I2C_FUNC_SMBUS_WORD_DATA |
-				     I2C_FUNC_SMBUS_BLOCK_DATA))
+				     I2C_FUNC_SMBUS_BLOCK_DATA)) {
+		printk("%s: %d\n", __func__, __LINE__);
 		return -ENODEV;
+	}
 
 	info = devm_kzalloc(dev, sizeof(struct pmbus_driver_info), GFP_KERNEL);
 	if (!info)
@@ -629,6 +631,7 @@ static int max31785_probe(struct i2c_client *client,
 		ret = max31785_of_fan_config(client, info, child);
 		if (ret < 0) {
 			of_node_put(child);
+			printk("%s: %d\n", __func__, __LINE__);
 			return ret;
 		}
 
@@ -638,6 +641,7 @@ static int max31785_probe(struct i2c_client *client,
 		ret = max31785_of_tmp_config(client, info, child);
 		if (ret < 0) {
 			of_node_put(child);
+			printk("%s: %d\n", __func__, __LINE__);
 			return ret;
 		}
 	}
@@ -646,27 +650,37 @@ static int max31785_probe(struct i2c_client *client,
 		bool have_fan = !!(info->func[i] & PMBUS_HAVE_FAN12);
 		bool fan_configured = !!(fans & BIT(i));
 
-		if (!have_fan || fan_configured)
+		if (!have_fan || fan_configured) {
+			printk("%s: %d\n", __func__, __LINE__);
 			continue;
+		}
 
 		ret = i2c_smbus_write_byte_data(client, PMBUS_PAGE, i);
-		if (ret < 0)
+		if (ret < 0) {
+			printk("%s: %d\n", __func__, __LINE__);
 			return ret;
+		}
 
 		ret = i2c_smbus_read_byte_data(client, PMBUS_FAN_CONFIG_12);
-		if (ret < 0)
+		if (ret < 0) {
+			printk("%s: %d\n", __func__, __LINE__);
 			return ret;
+		}
 
 		ret &= ~PB_FAN_1_INSTALLED;
 		ret = i2c_smbus_write_word_data(client, PMBUS_FAN_CONFIG_12,
 						ret);
-		if (ret < 0)
+		if (ret < 0) {
+			printk("%s: %d\n", __func__, __LINE__);
 			return ret;
+		}
 	}
 
 	ret = max31785_configure(client, id, info);
-	if (ret < 0)
+	if (ret < 0) {
+		printk("%s: %d\n", __func__, __LINE__);
 		return ret;
+	}
 
 	printk("%s (ready to probe)\n", __func__);
 
