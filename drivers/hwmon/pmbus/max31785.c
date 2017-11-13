@@ -610,6 +610,8 @@ static int max31785_probe(struct i2c_client *client,
 	s64 ret;
 	int i;
 
+	printk("%s!\n", __func__);
+
 	if (!i2c_check_functionality(client->adapter,
 				     I2C_FUNC_SMBUS_BYTE_DATA |
 				     I2C_FUNC_SMBUS_WORD_DATA |
@@ -666,7 +668,13 @@ static int max31785_probe(struct i2c_client *client,
 	if (ret < 0)
 		return ret;
 
-	return pmbus_do_probe(client, id, info);
+	printk("%s (ready to probe)\n", __func__);
+
+	ret = pmbus_do_probe(client, id, info);
+
+	printk("%s (probed: %d)\n", __func__, ret);
+
+	return ret;
 }
 
 static const struct i2c_device_id max31785_id[] = {
